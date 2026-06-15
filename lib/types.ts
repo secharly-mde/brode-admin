@@ -11,8 +11,8 @@ export interface Pedido {
   devuelve: number;        // frascos devueltos (logística inversa)
   envio: number;           // costo de envío en $
   total: number;           // calculado
-  estado: "Pagado" | "Pendiente";
-  metodo: "Transferencia" | "Efectivo" | "Débito" | "Tarjeta";
+  estado: "Pagado" | "Pendiente" | "Cortesía";
+  metodo: "Transferencia" | "Efectivo" | "Débito" | "Tarjeta" | "Ninguno";
   notas?: string;
   createdAt?: string;
 }

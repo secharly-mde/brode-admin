@@ -36,6 +36,7 @@ const tipoColors: Record<string, string> = {
 const estadoColors: Record<string, string> = {
   Pagado: "bg-emerald-100 text-emerald-700",
   Pendiente: "bg-amber-100 text-amber-700",
+  Cortesía: "bg-fuchsia-100 text-fuchsia-800",
 };
 
 const EMPTY_FORM = {
@@ -47,7 +48,7 @@ const EMPTY_FORM = {
   pollo: 0,
   devuelve: 0,
   envio: 0,
-  estado: "Pagado" as "Pagado" | "Pendiente",
+  estado: "Pagado" as Pedido["estado"],
   metodo: "Transferencia" as Pedido["metodo"],
   notas: "",
 };
@@ -80,7 +81,11 @@ export default function PedidosPage() {
       ? (PRECIOS_MAYORISTA[form.canal] ?? 250)
       : getPrecioRetail(frascos);
   const creditoDevolucion = form.devuelve * 20;
-  const totalCalculado = frascos * precioUnitario - creditoDevolucion + form.envio;
+  
+  let totalCalculado = frascos * precioUnitario - creditoDevolucion + form.envio;
+  if (form.estado === "Cortesía") {
+    totalCalculado = 0;
+  }
 
   async function handleSave() {
     if (!form.cliente || frascos === 0) return;
@@ -195,6 +200,7 @@ export default function PedidosPage() {
               <option value="">Todos los estados</option>
               <option value="Pagado">Pagado</option>
               <option value="Pendiente">Pendiente</option>
+              <option value="Cortesía">Cortesía</option>
             </select>
           </div>
           {/* Fila 2: filtros de fecha */}
@@ -375,10 +381,11 @@ export default function PedidosPage() {
                 <div>
                   <label className="text-xs font-semibold text-gray-500 uppercase">Estado de Pago</label>
                   <select value={form.estado}
-                    onChange={(e) => setForm({ ...form, estado: e.target.value as "Pagado" | "Pendiente" })}
+                    onChange={(e) => setForm({ ...form, estado: e.target.value as Pedido["estado"] })}
                     className="mt-1 w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none">
                     <option>Pagado</option>
                     <option>Pendiente</option>
+                    <option>Cortesía</option>
                   </select>
                 </div>
                 <div>
@@ -390,6 +397,7 @@ export default function PedidosPage() {
                     <option>Efectivo</option>
                     <option>Débito</option>
                     <option>Tarjeta</option>
+                    <option>Ninguno</option>
                   </select>
                 </div>
               </div>
@@ -414,7 +422,10 @@ export default function PedidosPage() {
                 )}
                 <div className="flex justify-between text-base font-bold text-gray-900 border-t border-emerald-200 mt-2 pt-2">
                   <span>Total</span>
-                  <span>${totalCalculado.toLocaleString()}</span>
+                  <span className={form.estado === "Cortesía" ? "line-through text-gray-400" : ""}>
+                    ${totalCalculado === 0 && form.estado !== "Cortesía" ? 0 : totalCalculado.toLocaleString()}
+                  </span>
+                  {form.estado === "Cortesía" && <span className="text-fuchsia-600 ml-2">GRATIS</span>}
                 </div>
               </div>
 
