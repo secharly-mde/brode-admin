@@ -146,7 +146,7 @@ export default function ClientesPage() {
                         </div>
                         <div>
                           <p className="font-medium text-gray-900">{c.nombre}</p>
-                          {c.notas && <p className="text-xs text-gray-400">{c.notas}</p>}
+                          {c.notas && !c.notas.includes("Mapa: ") && <p className="text-xs text-gray-400">{c.notas}</p>}
                         </div>
                       </div>
                     </td>
