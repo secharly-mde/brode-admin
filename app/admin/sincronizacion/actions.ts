@@ -162,12 +162,25 @@ export async function importarVentasCSV(url: string) {
       const envio = esLocal ? 0 : envioNumerico;
 
       const pagoNumerico = Number(pagoRaw.replace(/[^0-9.-]/g, ""));
-      const estado = pagoRaw.includes("PAG") || pagoNumerico > 0 ? "Pagado" : "Pendiente";
+      const isCortesia = pagoRaw.includes("CORTES") || pagoRaw.includes("PROMO");
+      
+      let estado: "Pagado" | "Pendiente" | "Cortesía" = "Pendiente";
+      if (isCortesia) {
+        estado = "Cortesía";
+      } else if (pagoRaw.includes("PAG") || pagoNumerico > 0) {
+        estado = "Pagado";
+      }
+      
+      if (isCortesia) metodo = "Ninguno";
 
       const importePlanilla = Number(String(row[6]).replace(/[^0-9.-]/g, "")) || 0;
-      const importe = importePlanilla > 0
+      let importe = importePlanilla > 0
         ? importePlanilla
         : (frascos * precioUnitario) + envio - creditoDevolucion;
+        
+      if (estado === "Cortesía") {
+        importe = 0;
+      }
 
       const now = new Date().toISOString();
       const pedido = {
