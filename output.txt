@@ -1,0 +1,148 @@
+◇ injected env (0) from .env.local // tip: ⌘ suppress logs { quiet: true }
+
+Procesando mes: JUNIO 2026 -> 2026-06
+  [Debug] Ignorando fila 2: res=0, pollo=0, nombre=""
+  -> ¡16 pedidos migrados!
+
+Procesando mes: MAYO 2026 -> 2026-05
+  [Debug] Ignorando fila 2: res=0, pollo=0, nombre=""
+  -> ¡63 pedidos migrados!
+
+Procesando mes: ABRIL 2026 -> 2026-04
+  [Debug] Ignorando fila 2: res=0, pollo=0, nombre=""
+  [Debug] Ignorando fila 3: res=0, pollo=0, nombre=""
+  -> ¡81 pedidos migrados!
+
+Procesando mes: MARZO 2026 -> 2026-03
+  [Debug] Ignorando fila 2: res=0, pollo=0, nombre=""
+  -> ¡52 pedidos migrados!
+
+Procesando mes: FEBRERO 2026 -> 2026-02
+  [Debug] Ignorando fila 2: res=0, pollo=0, nombre="SEMANA 6 - lunes 2/2"
+  -> ¡48 pedidos migrados!
+
+Procesando mes: ENERO 2026 -> 2026-01
+  [Debug] Ignorando fila 2: res=0, pollo=0, nombre="SEMANA 4 - lunes 19/1"
+  [Debug] Ignorando fila 3: res=0, pollo=0, nombre=""
+  [Debug] Ignorando fila 4: res=0, pollo=0, nombre="Sofía Maruri"
+  -> ¡19 pedidos migrados!
+
+Procesando mes: DICIEMBRE 2025 -> 2025-12
+  [Debug] Ignorando fila 2: res=0, pollo=0, nombre=""
+  -> ¡46 pedidos migrados!
+
+Procesando mes: NOVIEMBRE 2025 -> 2025-11
+  [Debug] Ignorando fila 2: res=0, pollo=0, nombre=""
+  -> ¡57 pedidos migrados!
+
+Procesando mes: OCTUBRE 2025 -> 2025-10
+  [Debug] Ignorando fila 2: res=0, pollo=0, nombre=""
+  -> ¡55 pedidos migrados!
+
+Procesando mes: SETIEMBRE 2025 -> 2025-09
+  [Debug] Ignorando fila 2: res=0, pollo=0, nombre=""
+  -> ¡66 pedidos migrados!
+
+Procesando mes: AGOSTO 2025 -> 2025-08
+  [Debug] Ignorando fila 2: res=0, pollo=0, nombre=""
+  -> ¡71 pedidos migrados!
+
+Procesando mes: JULIO 2025 -> 2025-07
+  [Debug] Ignorando fila 2: res=0, pollo=0, nombre=""
+  -> ¡65 pedidos migrados!
+
+Procesando mes: JUNIO 2025 -> 2025-06
+  [Debug] Ignorando fila 2: res=0, pollo=0, nombre=""
+  -> ¡79 pedidos migrados!
+
+Procesando mes: MAYO 2025 -> 2025-05
+  [Debug] Ignorando fila 2: res=0, pollo=0, nombre=""
+  -> ¡73 pedidos migrados!
+
+Procesando mes: ABRIL 2025 -> 2025-04
+  [Debug] Ignorando fila 2: res=0, pollo=0, nombre=""
+  -> ¡83 pedidos migrados!
+
+Procesando mes: MARZO 2025 -> 2025-03
+  [Debug] Ignorando fila 2: res=0, pollo=0, nombre=""
+  [Debug] Ignorando fila 3: res=0, pollo=0, nombre=""
+  -> ¡59 pedidos migrados!
+
+Procesando mes: FEBRERO 2025 -> 2025-02
+  [Debug] Ignorando fila 2: res=0, pollo=0, nombre=""
+  -> ¡50 pedidos migrados!
+
+Procesando mes: ENERO 2025 -> 2025-01
+  [Debug] Ignorando fila 2: res=0, pollo=0, nombre=""
+  -> ¡35 pedidos migrados!
+
+Procesando mes: DICIEMBRE 2024 -> 2024-12
+  [Debug] Ignorando fila 2: res=0, pollo=0, nombre=""
+  -> ¡57 pedidos migrados!
+
+Procesando mes: NOVIEMBRE 2024 -> 2024-11
+  [Debug] Ignorando fila 2: res=0, pollo=0, nombre=""
+  -> ¡71 pedidos migrados!
+
+Procesando mes: OCTUBRE 2024 -> 2024-10
+  [Debug] Ignorando fila 2: res=0, pollo=0, nombre=""
+  -> ¡111 pedidos migrados!
+
+Procesando mes: SETIEMBRE 2024 -> 2024-09
+  [Debug] Ignorando fila 2: res=0, pollo=0, nombre=""
+  -> ¡80 pedidos migrados!
+
+Procesando mes: AGOSTO 2024 -> 2024-08
+  [Debug] Ignorando fila 2: res=0, pollo=0, nombre=""
+  -> ¡99 pedidos migrados!
+
+Procesando mes: JULIO 2024 -> 2024-07
+  [Debug] Ignorando fila 2: res=0, pollo=0, nombre=""
+  -> ¡134 pedidos migrados!
+
+Procesando mes: MAYO 2024 -> 2024-05
+  [Debug] Ignorando fila 2: res=0, pollo=0, nombre=""
+  -> ¡120 pedidos migrados!
+
+Procesando mes: ABRIL 2024 -> 2024-04
+  [Debug] Ignorando fila 2: res=0, pollo=0, nombre=""
+  [Debug] Ignorando fila 3: res=0, pollo=0, nombre=""
+  -> ¡116 pedidos migrados!
+
+Procesando mes: MARZO 2024 -> 2024-03
+  [Debug] Ignorando fila 2: res=0, pollo=0, nombre=""
+  [Debug] Ignorando fila 4: res=0, pollo=0, nombre="Claudia Rodríguez"
+  -> ¡79 pedidos migrados!
+
+Procesando mes: FEBRERO 2024 -> 2024-02
+  [Debug] Ignorando fila 2: res=0, pollo=0, nombre=""
+  [Debug] Ignorando fila 3: res=0, pollo=0, nombre="Paula Cristófano"
+  [Debug] Ignorando fila 4: res=0, pollo=0, nombre="Valentina"
+  -> ¡75 pedidos migrados!
+
+Procesando mes: ENERO 2024 -> 2024-01
+  [Debug] Ignorando fila 2: res=0, pollo=0, nombre=""
+  -> ¡44 pedidos migrados!
+
+Procesando mes: DICIEMBRE 2022 -> 2022-12
+  [Debug] Ignorando fila 3: res=3, pollo=2, nombre=""
+  -> ¡94 pedidos migrados!
+
+Procesando mes: NOVIEMBRE 2022 -> 2022-11
+  [Debug] Ignorando fila 3: res=2, pollo=2, nombre=""
+  -> ¡150 pedidos migrados!
+
+Procesando mes: OCTUBRE 2022 -> 2022-10
+  [Debug] Ignorando fila 2: res=4, pollo=0, nombre=""
+  -> ¡222 pedidos migrados!
+
+Procesando mes: SETIEMBRE 2022 -> 2022-09
+  -> ¡167 pedidos migrados!
+
+Procesando mes: AGOSTO 2022 -> 2022-08
+  -> ¡224 pedidos migrados!
+
+Procesando mes: JUNIO 2024 -> 2024-06
+  [Debug] Ignorando fila 2: res=0, pollo=0, nombre=""
+  -> ¡111 pedidos migrados!
+Terminó la importación de pedidos.
