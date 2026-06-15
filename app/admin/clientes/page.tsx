@@ -4,7 +4,10 @@ import { useState, useEffect, useCallback } from "react";
 import { getClientes, addCliente, deleteCliente, getPedidosRecientes } from "@/lib/firestore";
 import type { Cliente } from "@/lib/types";
 
-const CANALES = ["MT Portal", "MT Punta", "Carnivery", "La Roti", "Retail", "Otro"];
+import { db } from "@/lib/firebase";
+import { doc, updateDoc, collection, getDocs } from "firebase/firestore";
+
+const CANALES = ["Local", "Retail", "Otro"];
 
 const EMPTY_FORM = {
   nombre: "",
@@ -63,6 +66,64 @@ export default function ClientesPage() {
     }
   }
 
+  async function handleNormalizar() {
+    if (!window.confirm("¿Seguro que querés unificar todos los nombres a los 4 locales formales y poner el resto como Retail?")) return;
+    setLoading(true);
+    
+    const localesFormales = [
+      "Madre Tierra Portal", 
+      "Madre Tierra Punta del Este", 
+      "Carnivery", 
+      "La Rotisería"
+    ];
+
+    function getNombreFormal(nombreOriginal: string) {
+      const n = nombreOriginal.toLowerCase();
+      if (n.includes("punta")) return "Madre Tierra Punta del Este";
+      if (n.includes("portal") || n === "mt" || n.includes("madre tierra")) return "Madre Tierra Portal";
+      if (n.includes("carny") || n.includes("carnivery")) return "Carnivery";
+      if (n.includes("roti") || n.includes("rotisería") || n.includes("rotiseria")) return "La Rotisería";
+      return nombreOriginal;
+    }
+
+    try {
+      for (const c of clientes) {
+        const formal = getNombreFormal(c.nombre);
+        const isLocal = localesFormales.includes(formal);
+        const newTipo = isLocal ? "Local" : "Retail";
+        const newCanal = isLocal ? "Local" : "Retail";
+        
+        if (c.nombre !== formal || c.tipo !== newTipo || c.canal !== newCanal) {
+          const ref = doc(db, "clientes", c.id!);
+          await updateDoc(ref, {
+            nombre: formal,
+            tipo: newTipo,
+            canal: newCanal
+          });
+        }
+      }
+      
+      const pedidosSnap = await getDocs(collection(db, "pedidos"));
+      for (const p of pedidosSnap.docs) {
+        const data = p.data();
+        if (data.cliente) {
+          const formal = getNombreFormal(data.cliente);
+          if (formal !== data.cliente) {
+            await updateDoc(doc(db, "pedidos", p.id), {
+              cliente: formal
+            });
+          }
+        }
+      }
+      alert("Base de datos normalizada con éxito.");
+    } catch (error) {
+      console.error(error);
+      alert("Error al normalizar la BD.");
+    }
+    
+    load();
+  }
+
   const clientesFiltrados = clientes.filter((c) =>
     c.nombre.toLowerCase().includes(buscar.toLowerCase()) ||
     c.canal.toLowerCase().includes(buscar.toLowerCase())
@@ -78,27 +139,35 @@ export default function ClientesPage() {
           <h1 className="text-2xl font-bold text-gray-900">Clientes</h1>
           <p className="text-gray-500">Directorio de clientes y precios acordados</p>
         </div>
-        <button
-          onClick={() => setShowModal(true)}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl font-medium flex items-center gap-2 transition-colors shadow-sm"
-        >
-          ➕ Nuevo Cliente
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={handleNormalizar}
+            className="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-xl font-medium flex items-center transition-colors shadow-sm text-sm"
+          >
+            🪄 Normalizar BD
+          </button>
+          <button
+            onClick={() => setShowModal(true)}
+            className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl font-medium flex items-center gap-2 transition-colors shadow-sm"
+          >
+            ➕ Nuevo Cliente
+          </button>
+        </div>
       </div>
 
       {/* Stats rápidas */}
       <div className="grid grid-cols-3 gap-4">
         <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
-          <p className="text-xs text-gray-500">Clientes Activos</p>
-          <p className="text-xl font-bold text-gray-900 mt-1">{activos.length}</p>
+          <p className="text-xs text-gray-500">Total Clientes</p>
+          <p className="text-xl font-bold text-gray-900 mt-1">{clientes.length}</p>
         </div>
         <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
-          <p className="text-xs text-gray-500">Mayoristas</p>
-          <p className="text-xl font-bold text-gray-900 mt-1">{activos.filter((c) => c.tipo === "Mayorista").length}</p>
+          <p className="text-xs text-gray-500">Locales</p>
+          <p className="text-xl font-bold text-gray-900 mt-1">{clientes.filter((c) => c.tipo === "Local").length}</p>
         </div>
         <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
-          <p className="text-xs text-gray-500">Retail Fijos</p>
-          <p className="text-xl font-bold text-gray-900 mt-1">{activos.filter((c) => c.tipo === "Retail").length}</p>
+          <p className="text-xs text-gray-500">Retail</p>
+          <p className="text-xl font-bold text-gray-900 mt-1">{clientes.filter((c) => c.tipo === "Retail").length}</p>
         </div>
       </div>
 
@@ -152,7 +221,7 @@ export default function ClientesPage() {
                     </td>
                     <td className="p-4">
                       <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-                        c.tipo === "Mayorista" ? "bg-blue-100 text-blue-800" : "bg-purple-100 text-purple-800"
+                        c.tipo === "Local" ? "bg-blue-100 text-blue-800" : "bg-purple-100 text-purple-800"
                       }`}>
                         {c.tipo}
                       </span>
@@ -220,7 +289,7 @@ export default function ClientesPage() {
                     className="mt-1 w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none"
                   >
                     <option>Retail</option>
-                    <option>Mayorista</option>
+                    <option>Local</option>
                   </select>
                 </div>
                 <div>

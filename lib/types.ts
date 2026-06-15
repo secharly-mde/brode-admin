@@ -46,7 +46,7 @@ export interface LoteProduccion {
 export interface Cliente {
   id?: string;
   nombre: string;
-  tipo: "Retail" | "Mayorista";
+  tipo: "Retail" | "Local";
   canal: string;
   precio: number;          // precio por frasco acordado
   activo: boolean;
