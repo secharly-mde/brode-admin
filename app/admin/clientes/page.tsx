@@ -129,8 +129,6 @@ export default function ClientesPage() {
     c.canal.toLowerCase().includes(buscar.toLowerCase())
   );
 
-  const activos = clientesFiltrados.filter((c) => clientesActivosNombres.has(c.nombre.toLowerCase()));
-
   return (
     <div className="space-y-6">
       {/* Header */}
