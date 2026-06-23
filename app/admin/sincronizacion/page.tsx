@@ -16,19 +16,12 @@ export default function SincronizacionPage() {
   useEffect(() => {
     // Cargar URLs guardadas
     const savedVentas = localStorage.getItem("brode_csv_ventas");
-    const savedGastos = localStorage.getItem("brode_csv_gastos");
     if (savedVentas) setUrlVentas(savedVentas);
-    if (savedGastos) setUrlGastos(savedGastos);
   }, []);
 
-  const handleUrlChange = (type: "ventas" | "gastos", url: string) => {
-    if (type === "ventas") {
-      setUrlVentas(url);
-      localStorage.setItem("brode_csv_ventas", url);
-    } else {
-      setUrlGastos(url);
-      localStorage.setItem("brode_csv_gastos", url);
-    }
+  const handleUrlChange = (type: "ventas", url: string) => {
+    setUrlVentas(url);
+    localStorage.setItem("brode_csv_ventas", url);
   };
 
   const handleSyncVentas = async () => {
@@ -45,19 +38,7 @@ export default function SincronizacionPage() {
     }
   };
 
-  const handleSyncGastos = async () => {
-    if (!urlGastos) return;
-    setIsSyncingGastos(true);
-    setResultGastos(null);
-    try {
-      const res = await importarGastosCSV(urlGastos);
-      setResultGastos(res);
-    } catch (err: unknown) {
-      setResultGastos({ nuevos: 0, borrados: 0, error: (err as Error).message || "Error desconocido" });
-    } finally {
-      setIsSyncingGastos(false);
-    }
-  };
+
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -128,64 +109,7 @@ export default function SincronizacionPage() {
           </button>
         </div>
 
-        {/* Tarjeta de Gastos */}
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 flex flex-col">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-xl">🧾</div>
-            <div>
-              <h2 className="text-lg font-bold text-gray-900">Gastos</h2>
-              <p className="text-xs text-gray-500">Sincroniza el historial de gastos</p>
-            </div>
-          </div>
-          
-          <div className="flex-1 mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Link CSV de Google Sheets
-            </label>
-            <input 
-              type="url" 
-              value={urlGastos}
-              onChange={(e) => handleUrlChange("gastos", e.target.value)}
-              placeholder="https://docs.google.com/spreadsheets/d/e/2PACX-1.../pub?output=csv"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
-            />
-            <p className="text-xs text-gray-500 mt-2">
-              Se guardará automáticamente para la próxima vez.
-            </p>
-          </div>
 
-          {resultGastos && (
-            <div className={`p-4 mb-6 rounded-lg text-sm ${resultGastos.error ? 'bg-red-50 text-red-800' : 'bg-orange-50 text-orange-800'}`}>
-              {resultGastos.error ? (
-                <p><strong>Error:</strong> {resultGastos.error}</p>
-              ) : (
-                <>
-                  <p className="font-bold mb-1">✅ Importación completada</p>
-                  <ul className="list-disc pl-5">
-                    <li>Gastos viejos eliminados: <strong>{resultGastos.borrados}</strong></li>
-                    <li>Nuevos gastos importados: <strong>{resultGastos.nuevos}</strong></li>
-                  </ul>
-                </>
-              )}
-            </div>
-          )}
-
-          <button 
-            onClick={handleSyncGastos}
-            disabled={!urlGastos || isSyncingGastos}
-            className="w-full py-2 px-4 bg-orange-600 hover:bg-orange-700 disabled:bg-orange-300 text-white font-medium rounded-lg transition-colors flex justify-center items-center gap-2"
-          >
-            {isSyncingGastos ? (
-              <>
-                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Sincronizando...
-              </>
-            ) : "Sincronizar Gastos"}
-          </button>
-        </div>
       </div>
     </div>
   );
