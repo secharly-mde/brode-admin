@@ -1,17 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { importarVentasCSV, importarGastosCSV } from "./actions";
+import { importarVentasCSV } from "./actions";
 
 export default function SincronizacionPage() {
   const [urlVentas, setUrlVentas] = useState("");
-  const [urlGastos, setUrlGastos] = useState("");
   
   const [isSyncingVentas, setIsSyncingVentas] = useState(false);
-  const [isSyncingGastos, setIsSyncingGastos] = useState(false);
   
   const [resultVentas, setResultVentas] = useState<{ nuevos: number, borrados: number, error?: string } | null>(null);
-  const [resultGastos, setResultGastos] = useState<{ nuevos: number, borrados: number, error?: string } | null>(null);
 
   useEffect(() => {
     // Cargar URLs guardadas
