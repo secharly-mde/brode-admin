@@ -147,7 +147,7 @@ export async function importarVentasCSV(url: string) {
       const val9 = String(row[9] || "").trim();
 
       let envioRaw = "";
-      let pagoRaw = val7;
+      const pagoRaw = val7;
       let cel = val8;
 
       if (cel === "180" || cel === "220" || cel.toUpperCase().includes("ENV")) {
