@@ -15,10 +15,11 @@ function getMesLabel(mes: string) {
   return fecha.toLocaleDateString("es-UY", { month: "long", year: "numeric" });
 }
 
-const CATEGORIAS: Gasto["categoria"][] = ["Cocina", "Local", "Reparto", "Personal", "Admin"];
+const CATEGORIAS: Gasto["categoria"][] = ["Materia Prima", "Cocina", "Local", "Reparto", "Personal", "Admin"];
 
 const SUBCATEGORIAS: Record<Gasto["categoria"], string[]> = {
-  Cocina: ["Pollo Carnivery", "Carne Carnivery", "Carne Novillo", "Pollo Novillo", "Verduras", "Condimentos", "Frascos nuevos", "Tapas", "Frascos usados devueltos", "Otro"],
+  "Materia Prima": ["Pollo Carnivery", "Carne Carnivery", "Carne Novillo", "Pollo Novillo", "Verduras", "Condimentos", "Otro"],
+  Cocina: ["Frascos nuevos", "Tapas", "Serigrafía", "Frascos usados devueltos", "Otro"],
   Local: ["Alquiler", "UTE", "OSE", "Antel", "Seguro", "Limpieza", "Otro"],
   Reparto: ["Logística Punta del Este", "Cadetería Montevideo", "Gasolina", "Otro"],
   Personal: ["Mariana", "Diego", "Otro"],
@@ -26,6 +27,7 @@ const SUBCATEGORIAS: Record<Gasto["categoria"], string[]> = {
 };
 
 const catColors: Record<string, string> = {
+  "Materia Prima": "bg-green-100 text-green-800",
   Cocina: "bg-orange-100 text-orange-800",
   Local: "bg-blue-100 text-blue-800",
   Reparto: "bg-purple-100 text-purple-800",
@@ -33,12 +35,12 @@ const catColors: Record<string, string> = {
   Admin: "bg-gray-100 text-gray-700",
 };
 const catIcons: Record<string, string> = {
-  Cocina: "🍲", Local: "🏠", Reparto: "🚚", Personal: "👥", Admin: "💻",
+  "Materia Prima": "🥩", Cocina: "🍲", Local: "🏠", Reparto: "🚚", Personal: "👥", Admin: "💻",
 };
 
 const EMPTY_FORM = {
   fecha: new Date().toISOString().slice(0, 10),
-  categoria: "Cocina" as Gasto["categoria"],
+  categoria: "Materia Prima" as Gasto["categoria"],
   subcategoria: "",
   descripcion: "",
   monto: 0,

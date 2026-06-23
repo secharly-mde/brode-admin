@@ -21,7 +21,7 @@ export interface Pedido {
 export interface Gasto {
   id?: string;
   fecha: string;
-  categoria: "Cocina" | "Local" | "Reparto" | "Personal" | "Admin";
+  categoria: "Cocina" | "Local" | "Reparto" | "Personal" | "Admin" | "Materia Prima";
   subcategoria: string;
   descripcion: string;
   monto: number;

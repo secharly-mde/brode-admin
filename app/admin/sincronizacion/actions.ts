@@ -309,13 +309,16 @@ export async function importarGastosCSV(url: string) {
 
     for (const row of rows) {
       const keys = Object.keys(row);
-      const getVal = (possibleNames: string[]) => {
-        const key = keys.find(k => possibleNames.some(p => k.toLowerCase().includes(p)));
+      const getVal = (possibleNames: string[], exclude: string[] = []) => {
+        const key = keys.find(k => {
+          const lowerK = k.toLowerCase().trim();
+          return possibleNames.some(p => lowerK.includes(p)) && !exclude.some(e => lowerK.includes(e));
+        });
         return key ? row[key] : "";
       };
 
       const fechaStr = getVal(["fecha"]);
-      const categoria = getVal(["categoría", "categoria"]);
+      const categoria = getVal(["categoría", "categoria"], ["sub"]);
       const subcategoria = getVal(["subcategoría", "subcategoria"]);
       const descripcion = getVal(["descripción", "descripcion"]);
       const montoRaw = getVal(["monto", "importe", "total"]);
