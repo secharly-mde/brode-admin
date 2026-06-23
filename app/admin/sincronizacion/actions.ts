@@ -139,23 +139,23 @@ export async function importarVentasCSV(url: string) {
         precioUnitario = 300;
       }
 
-      const devuelve = Number(row[7]) || 0;
+      const devuelve = Number(row[6]) || 0;
       const creditoDevolucion = devuelve * 20;
 
+      const val7 = String(row[7] || "").trim().toUpperCase();
       const val8 = String(row[8] || "").trim().toUpperCase();
       const val9 = String(row[9] || "").trim().toUpperCase();
-      const val10 = String(row[10] || "").trim().toUpperCase();
 
       let envioRaw = "";
       let pagoRaw = "";
       let cel = "";
 
-      if (val8 === "180" || val8 === "220" || val8.includes("ENV")) {
-        envioRaw = val8; pagoRaw = val9; cel = val10;
-      } else if (val9 === "180" || val9 === "220" || val9.includes("ENV")) {
-        pagoRaw = val8; envioRaw = val9; cel = val10;
+      if (val7 === "180" || val7 === "220" || val7.includes("ENV")) {
+        envioRaw = val7; pagoRaw = val8; cel = val9;
+      } else if (val8 === "180" || val8 === "220" || val8.includes("ENV")) {
+        pagoRaw = val7; envioRaw = val8; cel = val9;
       } else {
-        pagoRaw = val8; envioRaw = val9; cel = val10;
+        pagoRaw = val7; envioRaw = val8; cel = val9;
       }
 
       const envioNumerico = Number(envioRaw.replace(/[^0-9.-]/g, "")) || 0;
@@ -173,7 +173,7 @@ export async function importarVentasCSV(url: string) {
       
       if (isCortesia) metodo = "Ninguno";
 
-      const importePlanilla = Number(String(row[6]).replace(/[^0-9.-]/g, "")) || 0;
+      const importePlanilla = Number(String(row[5]).replace(/[^0-9.-]/g, "")) || 0;
       let importe = importePlanilla > 0
         ? importePlanilla
         : (frascos * precioUnitario) + envio - creditoDevolucion;
