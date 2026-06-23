@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect, useCallback } from "react";
-import { importarVentasCSV, importarGastosCSV } from "@/app/admin/sincronizacion/actions";
+import { importarVentasCSV } from "@/app/admin/sincronizacion/actions";
 
 const NAV_ITEMS = [
   { href: "/admin", label: "Dashboard", icon: "📊", group: "Finanzas" },
@@ -21,7 +21,6 @@ type Toast = { msg: string; ok: boolean } | null;
 
 function QuickSyncButtons({ onClose }: { onClose?: () => void }) {
   const [syncingVentas, setSyncingVentas] = useState(false);
-  const [syncingGastos, setSyncingGastos] = useState(false);
   const [toast, setToast] = useState<Toast>(null);
 
   const showToast = useCallback((msg: string, ok: boolean) => {
@@ -44,20 +43,7 @@ function QuickSyncButtons({ onClose }: { onClose?: () => void }) {
     }
   };
 
-  const handleGastos = async () => {
-    const url = localStorage.getItem("brode_csv_gastos");
-    if (!url) { showToast("Primero configurá la URL en Sincronización", false); return; }
-    setSyncingGastos(true);
-    try {
-      const res = await importarGastosCSV(url);
-      showToast(`✅ Gastos: ${res.nuevos} registros importados`, true);
-      if (onClose) onClose();
-    } catch (err: unknown) {
-      showToast(`❌ ${(err as Error).message || "Error al sincronizar"}`, false);
-    } finally {
-      setSyncingGastos(false);
-    }
-  };
+
 
   return (
     <div className="px-3 pb-1">
@@ -69,7 +55,7 @@ function QuickSyncButtons({ onClose }: { onClose?: () => void }) {
       <div className="flex gap-1.5">
         <button
           onClick={handleVentas}
-          disabled={syncingVentas || syncingGastos}
+          disabled={syncingVentas}
           className="flex-1 flex items-center justify-center gap-1 text-xs py-1.5 px-2 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-medium transition-colors disabled:opacity-50 border border-emerald-200"
           title="Sincronizar Ventas desde Google Sheets"
         >
@@ -79,19 +65,6 @@ function QuickSyncButtons({ onClose }: { onClose?: () => void }) {
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
             </svg>
           ) : "🛒"} Ventas
-        </button>
-        <button
-          onClick={handleGastos}
-          disabled={syncingVentas || syncingGastos}
-          className="flex-1 flex items-center justify-center gap-1 text-xs py-1.5 px-2 rounded-lg bg-orange-50 hover:bg-orange-100 text-orange-700 font-medium transition-colors disabled:opacity-50 border border-orange-200"
-          title="Sincronizar Gastos desde Google Sheets"
-        >
-          {syncingGastos ? (
-            <svg className="animate-spin h-3 w-3" viewBox="0 0 24 24" fill="none">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
-            </svg>
-          ) : "🧾"} Gastos
         </button>
       </div>
     </div>
