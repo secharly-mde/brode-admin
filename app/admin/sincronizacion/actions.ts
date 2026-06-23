@@ -316,6 +316,7 @@ export async function importarGastosCSV(url: string) {
 
       const fechaStr = getVal(["fecha"]);
       const categoria = getVal(["categoría", "categoria"]);
+      const subcategoria = getVal(["subcategoría", "subcategoria"]);
       const descripcion = getVal(["descripción", "descripcion"]);
       const montoRaw = getVal(["monto", "importe", "total"]);
       const metodoRaw = getVal(["método", "metodo", "pago"]);
@@ -342,12 +343,26 @@ export async function importarGastosCSV(url: string) {
       else if (mRaw.includes("débito") || mRaw.includes("debito")) metodo = "Débito";
       else if (mRaw.includes("tarjeta")) metodo = "Tarjeta";
 
+      let finalSubcategoria = String(subcategoria || "");
+      let finalDescripcion = String(descripcion || "");
+      const finalNotas = String(notas || "");
+
+      // Retro-compatibilidad: Si el CSV no tiene la columna "subcategoría" pero tiene "descripción" y "notas",
+      // asumimos que están usando el formato viejo donde descripción era subcategoría y notas era descripción.
+      if (!subcategoria && descripcion && notas) {
+        finalSubcategoria = finalDescripcion;
+        finalDescripcion = finalNotas;
+      } else if (finalNotas) {
+        // Si hay notas y también descripción, las concatenamos
+        finalDescripcion = finalDescripcion ? `${finalDescripcion} - ${finalNotas}` : finalNotas;
+      }
+
       const now = new Date().toISOString();
       const gasto = {
         fecha,
         categoria: categoria || "Admin",
-        subcategoria: descripcion,
-        descripcion: notas || "",
+        subcategoria: finalSubcategoria,
+        descripcion: finalDescripcion,
         monto,
         metodo,
         importado_desde_sync: true,
