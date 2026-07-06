@@ -24,14 +24,22 @@ export default function Dashboard() {
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [gastos, setGastos] = useState<Gasto[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function load() {
       setLoading(true);
-      const [p, g] = await Promise.all([getPedidos(mes), getGastos(mes)]);
-      setPedidos(p);
-      setGastos(g);
-      setLoading(false);
+      setError(null);
+      try {
+        const [p, g] = await Promise.all([getPedidos(mes), getGastos(mes)]);
+        setPedidos(p);
+        setGastos(g);
+      } catch (err: any) {
+        console.error("Error loading data:", err);
+        setError(err.message || "Error desconocido al cargar los datos de Firebase.");
+      } finally {
+        setLoading(false);
+      }
     }
     load();
   }, [mes]);
@@ -83,6 +91,14 @@ export default function Dashboard() {
           <div className="text-center">
             <div className="text-4xl mb-3 animate-pulse">🌿</div>
             <p>Cargando datos...</p>
+          </div>
+        </div>
+      ) : error ? (
+        <div className="flex items-center justify-center py-20 text-red-500">
+          <div className="text-center max-w-md bg-red-50 p-6 rounded-2xl border border-red-100">
+            <div className="text-4xl mb-3">⚠️</div>
+            <p className="font-semibold mb-2">Hubo un error cargando los datos</p>
+            <p className="text-sm">{error}</p>
           </div>
         </div>
       ) : (
