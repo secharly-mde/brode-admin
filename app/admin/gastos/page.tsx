@@ -52,6 +52,7 @@ export default function GastosPage() {
   const [gastos, setGastos] = useState<Gasto[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [step, setStep] = useState<"categoria" | "subcategoria" | "detalle">("categoria");
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({ ...EMPTY_FORM });
   const [buscar, setBuscar] = useState("");
@@ -127,7 +128,11 @@ export default function GastosPage() {
           </div>
         </div>
         <button
-          onClick={() => setShowModal(true)}
+          onClick={() => {
+            setForm({ ...EMPTY_FORM, monto: "" as unknown as number });
+            setStep("categoria");
+            setShowModal(true);
+          }}
           className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl font-medium flex items-center gap-2 transition-colors shadow-sm"
         >
           ➕ Registrar Gasto
@@ -262,77 +267,118 @@ export default function GastosPage() {
       {/* ── MODAL NUEVO GASTO ── */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md">
-            <div className="p-6 border-b border-gray-100 flex justify-between items-center">
-              <h2 className="text-lg font-bold text-gray-900">Registrar Gasto</h2>
-              <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-gray-600 text-xl">✕</button>
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md flex flex-col max-h-[90vh]">
+            <div className="p-5 border-b border-gray-100 flex justify-between items-center bg-white rounded-t-2xl sticky top-0">
+              <h2 className="text-lg font-bold text-gray-900">
+                {step === "categoria" ? "1. Seleccioná una categoría" : 
+                 step === "subcategoria" ? "2. ¿Qué subcategoría es?" : 
+                 "3. Detalle del gasto"}
+              </h2>
+              <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-gray-600 text-xl w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors">✕</button>
             </div>
-            <div className="p-6 space-y-4">
-              <div>
-                <label className="text-xs font-semibold text-gray-500 uppercase">Fecha</label>
-                <input type="date" value={form.fecha}
-                  onChange={(e) => setForm({ ...form, fecha: e.target.value })}
-                  className="mt-1 w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-400" />
-              </div>
-
-              <div>
-                <label className="text-xs font-semibold text-gray-500 uppercase">Categoría</label>
-                <select value={form.categoria}
-                  onChange={(e) => setForm({ ...form, categoria: e.target.value as Gasto["categoria"], subcategoria: "" })}
-                  className="mt-1 w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none">
-                  {CATEGORIAS.map((c) => <option key={c}>{c}</option>)}
-                </select>
-              </div>
-
-              <div>
-                <label className="text-xs font-semibold text-gray-500 uppercase">Subcategoría</label>
-                <select value={form.subcategoria}
-                  onChange={(e) => setForm({ ...form, subcategoria: e.target.value })}
-                  className="mt-1 w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none">
-                  <option value="">Seleccioná...</option>
-                  {SUBCATEGORIAS[form.categoria].map((s) => <option key={s}>{s}</option>)}
-                </select>
-              </div>
-
-              <div>
-                <label className="text-xs font-semibold text-gray-500 uppercase">Descripción (opcional)</label>
-                <input type="text" value={form.descripcion} placeholder="Detalle del gasto..."
-                  onChange={(e) => setForm({ ...form, descripcion: e.target.value })}
-                  className="mt-1 w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none" />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-xs font-semibold text-gray-500 uppercase">Monto $</label>
-                  <input type="number" min={0} value={form.monto}
-                    onChange={(e) => setForm({ ...form, monto: Number(e.target.value) })}
-                    className="mt-1 w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-400" />
+            <div className="p-5 overflow-y-auto space-y-4">
+              {step === "categoria" && (
+                <div className="grid grid-cols-2 gap-3">
+                  {CATEGORIAS.map(cat => (
+                    <button 
+                      key={cat} 
+                      onClick={() => { setForm({...form, categoria: cat, subcategoria: ""}); setStep("subcategoria"); }} 
+                      className={`flex flex-col items-center justify-center p-5 rounded-xl border transition-all hover:scale-[1.02] active:scale-95 shadow-sm ${catColors[cat] || "bg-gray-50 border-gray-200 text-gray-700"}`}
+                    >
+                      <span className="text-4xl mb-3 drop-shadow-sm">{catIcons[cat]}</span>
+                      <span className="font-bold text-sm text-center leading-tight">{cat}</span>
+                    </button>
+                  ))}
                 </div>
-                <div>
-                  <label className="text-xs font-semibold text-gray-500 uppercase">Método de Pago</label>
-                  <select value={form.metodo}
-                    onChange={(e) => setForm({ ...form, metodo: e.target.value as Gasto["metodo"] })}
-                    className="mt-1 w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none">
-                    <option>Transferencia</option>
-                    <option>Efectivo</option>
-                    <option>Débito</option>
-                    <option>Tarjeta</option>
-                    <option>Crédito</option>
-                  </select>
+              )}
+
+              {step === "subcategoria" && (
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => setStep("categoria")} className="text-gray-400 hover:text-gray-700 text-sm font-medium bg-gray-50 hover:bg-gray-100 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1">
+                      <span>←</span> Volver
+                    </button>
+                    <span className="text-sm font-semibold text-gray-400">/</span>
+                    <span className={`text-xs px-2 py-1 rounded-full font-bold ${catColors[form.categoria] || "bg-gray-100 text-gray-700"}`}>
+                      {catIcons[form.categoria]} {form.categoria}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    {SUBCATEGORIAS[form.categoria]?.map(sub => (
+                      <button 
+                        key={sub} 
+                        onClick={() => { setForm({...form, subcategoria: sub}); setStep("detalle"); }} 
+                        className="p-4 bg-white border border-gray-200 rounded-xl font-semibold text-gray-700 hover:bg-red-50 hover:border-red-200 hover:text-red-700 transition-all text-sm shadow-sm active:scale-95 text-left flex items-center justify-between group"
+                      >
+                        <span>{sub}</span>
+                        <span className="text-gray-300 group-hover:text-red-400 transition-colors">›</span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
+
+              {step === "detalle" && (
+                <div className="space-y-5">
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => setStep("subcategoria")} className="text-gray-400 hover:text-gray-700 text-sm font-medium bg-gray-50 hover:bg-gray-100 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1">
+                      <span>←</span> Volver
+                    </button>
+                    <span className="text-sm font-semibold text-gray-400">/</span>
+                    <span className="text-sm font-bold text-gray-700">{form.subcategoria}</span>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Monto $</label>
+                    <input type="number" min={0} value={form.monto || ""}
+                      onChange={(e) => setForm({ ...form, monto: Number(e.target.value) })}
+                      className="w-full border border-gray-300 rounded-xl px-4 py-3 text-2xl font-bold text-gray-900 focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-100 transition-all" 
+                      placeholder="0" autoFocus />
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Descripción (opcional)</label>
+                    <input type="text" value={form.descripcion} placeholder="Ej: Pago de factura, compra de..."
+                      onChange={(e) => setForm({ ...form, descripcion: e.target.value })}
+                      className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-100 transition-all" />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Fecha</label>
+                      <input type="date" value={form.fecha}
+                        onChange={(e) => setForm({ ...form, fecha: e.target.value })}
+                        className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-100 transition-all" />
+                    </div>
+                    <div>
+                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Método</label>
+                      <select value={form.metodo}
+                        onChange={(e) => setForm({ ...form, metodo: e.target.value as Gasto["metodo"] })}
+                        className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-100 transition-all bg-white">
+                        <option>Transferencia</option>
+                        <option>Efectivo</option>
+                        <option>Débito</option>
+                        <option>Tarjeta</option>
+                        <option>Crédito</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
-            <div className="p-6 border-t border-gray-100 flex gap-3">
-              <button onClick={() => setShowModal(false)}
-                className="flex-1 border border-gray-200 text-gray-600 rounded-xl py-2.5 text-sm font-medium hover:bg-gray-50 transition-colors">
-                Cancelar
-              </button>
-              <button onClick={handleSave} disabled={saving || !form.subcategoria || form.monto <= 0}
-                className="flex-1 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white rounded-xl py-2.5 text-sm font-semibold transition-colors">
-                {saving ? "Guardando..." : "Guardar Gasto"}
-              </button>
-            </div>
+            {step === "detalle" && (
+              <div className="p-5 border-t border-gray-100 flex gap-3 bg-white rounded-b-2xl sticky bottom-0">
+                <button onClick={() => setShowModal(false)}
+                  className="flex-1 bg-gray-50 text-gray-700 border border-gray-200 rounded-xl py-3 text-sm font-bold hover:bg-gray-100 transition-colors">
+                  Cancelar
+                </button>
+                <button onClick={handleSave} disabled={saving || !form.subcategoria || form.monto <= 0}
+                  className="flex-1 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white rounded-xl py-3 text-sm font-bold shadow-md shadow-red-200 hover:shadow-lg hover:shadow-red-300 transition-all active:scale-[0.98]">
+                  {saving ? "Guardando..." : "Guardar Gasto"}
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}

@@ -34,9 +34,9 @@ export default function Dashboard() {
         const [p, g] = await Promise.all([getPedidos(mes), getGastos(mes)]);
         setPedidos(p);
         setGastos(g);
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error("Error loading data:", err);
-        setError(err.message || "Error desconocido al cargar los datos de Firebase.");
+        setError((err as Error).message || "Error desconocido al cargar los datos de Firebase.");
       } finally {
         setLoading(false);
       }
