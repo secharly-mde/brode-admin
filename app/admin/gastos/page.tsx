@@ -22,7 +22,7 @@ const SUBCATEGORIAS: Record<Gasto["categoria"], string[]> = {
   Cocina: ["Frascos nuevos", "Tapas", "Serigrafía", "Frascos usados devueltos", "Otro"],
   Local: ["Alquiler", "UTE", "OSE", "Antel", "Seguro", "Limpieza", "Otro"],
   Reparto: ["Logística Punta del Este", "Cadetería Montevideo", "Gasolina", "Otro"],
-  Personal: ["Mariana", "Diego", "Otro"],
+  Personal: ["Mariana", "Diego", "German", "Otro"],
   Admin: ["Publicidad en redes", "Dominio/Hosting", "Contabilidad", "Otro"],
 };
 
@@ -38,7 +38,7 @@ const catIcons: Record<string, string> = {
   "Materia Prima": "🥩", Cocina: "🍲", Local: "🏠", Reparto: "🚚", Personal: "👥", Admin: "💻",
 };
 
-const GASTOS_FIJOS = ["Alquiler", "UTE", "OSE", "Antel", "Seguro", "Limpieza", "Mariana", "Diego", "Publicidad en redes", "Dominio/Hosting", "Contabilidad"];
+const GASTOS_FIJOS = ["Alquiler", "UTE", "OSE", "Antel", "Seguro", "Limpieza", "Mariana", "Diego", "German", "Publicidad en redes", "Dominio/Hosting", "Contabilidad"];
 
 const EMPTY_FORM = {
   fecha: new Date().toISOString().slice(0, 10),
