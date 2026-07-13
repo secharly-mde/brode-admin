@@ -9,9 +9,10 @@ import {
   runTransaction,
   getDoc,
   deleteDoc,
+  setDoc,
 } from "firebase/firestore";
 import { db } from "./firebase";
-import type { Pedido, Gasto, LoteProduccion, Cliente } from "./types";
+import type { Pedido, Gasto, LoteProduccion, Cliente, ChecklistMensual } from "./types";
 
 // ─── Helpers ────────────────────────────────────────────────
 function nowISO() {
@@ -98,6 +99,38 @@ export async function getGastos(mes?: string): Promise<Gasto[]> {
     : query(ref, orderBy("fecha", "desc"));
   const snap = await getDocs(q);
   return snap.docs.map((d) => ({ id: d.id, ...d.data() } as Gasto));
+}
+
+// ─── CHECKLIST GASTOS ───────────────────────────────────────
+export async function getChecklist(mes: string): Promise<ChecklistMensual> {
+  const docRef = doc(db, "gastos_checklist", mes);
+  const snap = await getDoc(docRef);
+  if (snap.exists()) {
+    return { id: snap.id, ...snap.data() } as ChecklistMensual;
+  }
+  return { id: mes, mes, checkedItems: [] };
+}
+
+export async function toggleChecklistItem(mes: string, item: string, checked: boolean) {
+  const docRef = doc(db, "gastos_checklist", mes);
+  const snap = await getDoc(docRef);
+  let checkedItems: string[] = [];
+  
+  if (snap.exists()) {
+    checkedItems = snap.data().checkedItems || [];
+  }
+  
+  if (checked && !checkedItems.includes(item)) {
+    checkedItems.push(item);
+  } else if (!checked && checkedItems.includes(item)) {
+    checkedItems = checkedItems.filter((i) => i !== item);
+  }
+  
+  await setDoc(docRef, {
+    mes,
+    checkedItems,
+    updatedAt: nowISO()
+  }, { merge: true });
 }
 
 // ─── PRODUCCIÓN ─────────────────────────────────────────────

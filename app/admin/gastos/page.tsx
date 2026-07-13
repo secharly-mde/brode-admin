@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { getGastos, addGasto, deleteGasto } from "@/lib/firestore";
+import { getGastos, addGasto, deleteGasto, getChecklist, toggleChecklistItem } from "@/lib/firestore";
 import type { Gasto } from "@/lib/types";
 
 function getMesActual() {
@@ -38,6 +38,8 @@ const catIcons: Record<string, string> = {
   "Materia Prima": "🥩", Cocina: "🍲", Local: "🏠", Reparto: "🚚", Personal: "👥", Admin: "💻",
 };
 
+const GASTOS_FIJOS = ["Alquiler", "UTE", "OSE", "Antel", "Seguro", "Limpieza", "Mariana", "Diego", "Publicidad en redes", "Dominio/Hosting", "Contabilidad"];
+
 const EMPTY_FORM = {
   fecha: new Date().toISOString().slice(0, 10),
   categoria: "Materia Prima" as Gasto["categoria"],
@@ -50,6 +52,7 @@ const EMPTY_FORM = {
 export default function GastosPage() {
   const [mes, setMes] = useState(getMesActual());
   const [gastos, setGastos] = useState<Gasto[]>([]);
+  const [checklist, setChecklist] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [step, setStep] = useState<"categoria" | "subcategoria" | "detalle">("categoria");
@@ -62,10 +65,17 @@ export default function GastosPage() {
 
   const load = useCallback(async () => {
     setLoading(true);
-    const data = await getGastos(mes);
+    const [data, chk] = await Promise.all([getGastos(mes), getChecklist(mes)]);
     setGastos(data);
+    setChecklist(chk.checkedItems || []);
     setLoading(false);
   }, [mes]);
+
+  async function handleToggleChecklist(item: string) {
+    const isChecked = checklist.includes(item);
+    setChecklist(prev => isChecked ? prev.filter(i => i !== item) : [...prev, item]);
+    await toggleChecklistItem(mes, item, !isChecked);
+  }
 
   useEffect(() => { load(); }, [load]);
 
@@ -100,6 +110,18 @@ export default function GastosPage() {
     acc[g.categoria] = (acc[g.categoria] || 0) + g.monto;
     return acc;
   }, {});
+
+  const pendientes = GASTOS_FIJOS.filter(gf => {
+    const hasGasto = gastos.some(g => g.subcategoria === gf);
+    const isChecked = checklist.includes(gf);
+    return !hasGasto && !isChecked;
+  });
+  
+  const pagados = GASTOS_FIJOS.filter(gf => {
+    const hasGasto = gastos.some(g => g.subcategoria === gf);
+    const isChecked = checklist.includes(gf);
+    return hasGasto || isChecked;
+  });
 
   const meses: string[] = [];
   const now = new Date();
@@ -151,6 +173,83 @@ export default function GastosPage() {
           ))}
         </div>
       )}
+
+      {/* Checklist Gastos Fijos */}
+      <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+        <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+          <span>📝</span> Checklist de Gastos Fijos
+        </h2>
+        
+        {loading ? (
+          <div className="text-sm text-gray-400">Cargando checklist...</div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Pendientes */}
+            <div>
+              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-3">Pendientes ({pendientes.length})</h3>
+              {pendientes.length === 0 ? (
+                <p className="text-sm text-gray-400 italic">¡Todo al día! 🎉</p>
+              ) : (
+                <div className="space-y-2">
+                  {pendientes.map(item => (
+                    <div key={item} className="flex justify-between items-center bg-gray-50 p-3 rounded-xl border border-gray-200">
+                      <span className="text-sm font-medium text-gray-700">{item}</span>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleToggleChecklist(item)}
+                          title="Marcar como pagado sin cargar monto"
+                          className="text-xs px-3 py-1.5 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors font-semibold"
+                        >
+                          ✓ Marcar
+                        </button>
+                        <button
+                          onClick={() => {
+                            const cat = Object.keys(SUBCATEGORIAS).find(c => SUBCATEGORIAS[c as Gasto["categoria"]].includes(item)) as Gasto["categoria"] || "Materia Prima";
+                            setForm({ ...EMPTY_FORM, categoria: cat, subcategoria: item, monto: "" as unknown as number });
+                            setStep("detalle");
+                            setShowModal(true);
+                          }}
+                          className="text-xs px-3 py-1.5 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg transition-colors font-semibold"
+                        >
+                          $ Cargar
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Pagados */}
+            <div>
+              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-3">Pagados ({pagados.length})</h3>
+              <div className="space-y-2">
+                {pagados.map(item => {
+                  const hasGasto = gastos.some(g => g.subcategoria === item);
+                  return (
+                    <div key={item} className="flex justify-between items-center bg-emerald-50 p-3 rounded-xl border border-emerald-100 opacity-70 hover:opacity-100 transition-opacity">
+                      <div className="flex items-center gap-2">
+                        <span className="text-emerald-500 font-bold">✓</span>
+                        <span className="text-sm font-medium text-gray-700 line-through">{item}</span>
+                        {hasGasto && <span className="text-[10px] bg-emerald-200 text-emerald-800 px-1.5 py-0.5 rounded-full font-bold" title="Tiene gasto cargado">$</span>}
+                      </div>
+                      {!hasGasto && (
+                         <button
+                           onClick={() => handleToggleChecklist(item)}
+                           title="Desmarcar manual"
+                           className="text-xs text-gray-400 hover:text-red-500 px-2 py-1 font-semibold"
+                         >
+                           Deshacer
+                         </button>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Table */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">

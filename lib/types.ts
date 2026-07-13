@@ -66,3 +66,11 @@ export interface MovimientoInventario {
   motivo: string;
   createdAt?: string;
 }
+
+// ─── CHECKLIST GASTOS FIJOS ─────────────────────────────────
+export interface ChecklistMensual {
+  id?: string;             // "YYYY-MM"
+  mes: string;             // "YYYY-MM"
+  checkedItems: string[];  // Lista de subcategorías marcadas manualmente
+  updatedAt?: string;
+}
