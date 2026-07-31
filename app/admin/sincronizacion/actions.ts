@@ -142,12 +142,12 @@ export async function importarVentasCSV(url: string) {
       const devuelve = Number(row[6]) || 0;
       const creditoDevolucion = devuelve * 20;
 
-      const val7 = String(row[7] || "").trim().toUpperCase();
+      const val7 = String(row[7] || "").trim();
       const val8 = String(row[8] || "").trim();
       const val9 = String(row[9] || "").trim();
+      const val10 = String(row[10] || "").trim();
 
       let envioRaw = "";
-      const pagoRaw = val7;
       let cel = val8;
 
       if (cel === "180" || cel === "220" || cel.toUpperCase().includes("ENV")) {
@@ -162,13 +162,17 @@ export async function importarVentasCSV(url: string) {
       const envioNumerico = Number(envioRaw.replace(/[^0-9.-]/g, "")) || 0;
       const envio = esLocal ? 0 : envioNumerico;
 
-      const pagoNumerico = Number(pagoRaw.replace(/[^0-9.-]/g, ""));
-      const isCortesia = pagoRaw.includes("CORTES") || pagoRaw.includes("PROMO");
+      // Buscar confirmación de pago en las últimas columnas (por si se corrió la columna en el Excel)
+      const colsToSearch = [val7, val8, val9, val10].map(v => v.toUpperCase());
+      const isCortesia = colsToSearch.some(v => v.includes("CORTES") || v.includes("PROMO"));
+      const isPagadoStr = colsToSearch.some(v => v.includes("PAG") || v === "OK" || v === "LISTO" || v === "SI" || v === "SÍ" || v === "S");
+      
+      const pagoNumerico = Number(val7.replace(/[^0-9.-]/g, ""));
       
       let estado: "Pagado" | "Pendiente" | "Cortesía" = "Pendiente";
       if (isCortesia) {
         estado = "Cortesía";
-      } else if (pagoRaw.includes("PAG") || pagoNumerico > 0) {
+      } else if (isPagadoStr || (pagoNumerico > 0 && pagoNumerico >= 50)) {
         estado = "Pagado";
       }
       
