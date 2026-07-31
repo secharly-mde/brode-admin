@@ -76,14 +76,19 @@ export async function importarVentasCSV(url: string) {
       const colE = String(row[3] || "").trim();
 
       const fullRowText = row.join(" ").toUpperCase();
-      if (fullRowText.includes("SEMANA") && (fullRowText.includes("/") || fullRowText.includes("LUNES") || fullRowText.includes("MARTES"))) {
-        const match = fullRowText.match(/(\d{1,2})\/(\d{1,2})/);
+      
+      // Buscar patrones de fecha en encabezados, ej: "SEMANA 28", "LUNES 6/7", "MARTES 6 DEL 7"
+      if (fullRowText.includes("SEMANA") || fullRowText.includes("LUNES") || fullRowText.includes("MARTES") || fullRowText.includes("MIERCOLES") || fullRowText.includes("MIÉRCOLES") || fullRowText.includes("JUEVES") || fullRowText.includes("VIERNES")) {
+        const match = fullRowText.match(/(\d{1,2})\s*(?:\/|-|DEL?|DE)\s*(\d{1,2})/);
         if (match) {
           const dia = match[1].padStart(2, "0");
           const mes = match[2].padStart(2, "0");
           currentFecha = `${currentYear}-${mes}-${dia}`;
         }
-        continue;
+        // Si no tiene frascos, es solo una fila separadora, la salteamos
+        const checkRes = Number(row[1]) || 0;
+        const checkPollo = Number(row[2]) || 0;
+        if (checkRes === 0 && checkPollo === 0) continue;
       }
 
       if (colE.toUpperCase() === "NOMBRE") continue;
