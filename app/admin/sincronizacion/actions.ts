@@ -184,7 +184,7 @@ export async function importarVentasCSV(url: string) {
       const envioRaw = String(row[9] || "").trim();
 
       // K (CEL)
-      let cel = String(row[10] || "").trim();
+      const cel = String(row[10] || "").trim();
 
       const envioNumerico = Number(envioRaw.replace(/[^0-9.-]/g, "")) || 0;
       const envio = esLocal ? 0 : envioNumerico;
