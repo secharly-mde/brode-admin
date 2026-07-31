@@ -132,18 +132,24 @@ export async function importarVentasCSV(url: string) {
       else if (metodoRaw.includes("tarjeta")) metodo = "Tarjeta";
 
       const nombreUpper = colE.toUpperCase();
+      const direccionUpper = direccion.toUpperCase();
+      const nombreDir = `${nombreUpper} ${direccionUpper}`;
 
       const preciosLocales: Record<string, number> = {
-        "MT PORTAL":    245,
-        "MADRE TIERRA": 245,
-        "MT PUNTA":     290,
-        "CARNIVERY":    270,
-        "LA ROTI":      270,
-        "ROTI":         270,
-        "ALMACEN":      270,
+        "MADRE TIERRA PUNTA": 290,
+        "MT PUNTA":           290,
+        "MADRE TIERRA PORTAL": 245,
+        "MADRE TIERRA MAM":   245,
+        "MT PORTAL":          245,
+        "MADRE TIERRA":       245,
+        "CARNIVERY":          270,
+        "LA ROTI":            270,
+        "ROTI":               270,
+        "ALMACEN":            270,
       };
 
-      const localKey = Object.keys(preciosLocales).find(k => nombreUpper.includes(k));
+      const sortedLocalKeys = Object.keys(preciosLocales).sort((a, b) => b.length - a.length);
+      const localKey = sortedLocalKeys.find(k => nombreDir.includes(k));
       const esLocal = !!localKey;
       const tipo = esLocal ? "Local" : "Retail";
 
