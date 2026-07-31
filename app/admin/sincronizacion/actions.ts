@@ -1,6 +1,6 @@
 import Papa from "papaparse";
 import { doc, getDocs, collection, writeBatch, runTransaction } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { db } from "../../../lib/firebase";
 
 // Helper para agrupar arrays en chunks de N elementos (máx 500 por batch en Firestore)
 function chunks<T>(arr: T[], size: number): T[][] {
