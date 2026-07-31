@@ -156,6 +156,10 @@ export async function importarVentasCSV(url: string) {
       let precioUnitario: number;
       if (esLocal && localKey) {
         precioUnitario = preciosLocales[localKey];
+        // A partir de agosto, Punta del Este también vale 245
+        if (currentFecha >= "2026-08-01" && (localKey.includes("MADRE TIERRA") || localKey.includes("MT "))) {
+          precioUnitario = 245;
+        }
       } else if (frascos >= 18) {
         precioUnitario = 270;
       } else if (frascos >= 12) {
