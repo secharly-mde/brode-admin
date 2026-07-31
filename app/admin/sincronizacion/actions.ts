@@ -158,9 +158,21 @@ export async function importarVentasCSV(url: string) {
       const envioNumerico = Number(envioRaw.replace(/[^0-9.-]/g, "")) || 0;
       const envio = esLocal ? 0 : envioNumerico;
 
-      // Determinamos el estado de pago
-      const isCortesia = pagoRaw.includes("CORTES") || pagoRaw.includes("PROMO");
-      const isPagadoStr = pagoRaw.includes("PAG") || pagoRaw === "OK" || pagoRaw === "LISTO" || pagoRaw === "SI" || pagoRaw === "SÍ" || pagoRaw === "S";
+      // Determinamos el estado de pago buscando en TODAS las columnas finales
+      // (a veces locales como Madre Tierra anotan el pago en Notas o en Método)
+      const colsToSearch = [
+        String(row[5] || ""),
+        String(row[6] || ""),
+        String(row[7] || ""),
+        String(row[8] || ""),
+        String(row[9] || ""),
+        String(row[10] || ""),
+        String(row[11] || ""),
+        String(row[12] || "")
+      ].map(v => v.toUpperCase());
+
+      const isCortesia = colsToSearch.some(v => v.includes("CORTES") || v.includes("PROMO"));
+      const isPagadoStr = colsToSearch.some(v => v.includes("PAG") || v === "OK" || v === "LISTO" || v === "SI" || v === "SÍ" || v === "S");
       const pagoNumerico = Number(pagoRaw.replace(/[^0-9.-]/g, ""));
       
       let estado: "Pagado" | "Pendiente" | "Cortesía" = "Pendiente";
