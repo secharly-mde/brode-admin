@@ -17,7 +17,12 @@ function generateId(prefix: string, ...parts: string[]) {
 
 export async function importarVentasCSV(url: string) {
   try {
-    const res = await fetch(url, { cache: "no-store" });
+    // Agregamos un timestamp para forzar a Google Sheets a ignorar su propio caché interno
+    const cacheBusterUrl = url.includes("?") 
+      ? `${url}&_t=${Date.now()}` 
+      : `${url}?_t=${Date.now()}`;
+      
+    const res = await fetch(cacheBusterUrl, { cache: "no-store" });
     if (!res.ok) throw new Error("No se pudo descargar el CSV. Verificá que el link sea correcto y esté publicado.");
     
     const csvText = await res.text();
@@ -143,7 +148,11 @@ export async function importarVentasCSV(url: string) {
       const importePlanilla = Number(String(row[6]).replace(/[^0-9.-]/g, "")) || 0;
 
       // H (FRASCOS DEVUELTOS)
-      const devuelve = Number(String(row[7]).replace(/[^0-9.-]/g, "")) || 0;
+      let devuelve = Number(String(row[7]).replace(/[^0-9.-]/g, "")) || 0;
+      // Sanity check: si devuelven más de 100 frascos, probablemente fue un error de tipeo (escribieron plata)
+      if (devuelve > 100) {
+        devuelve = 0;
+      }
       const creditoDevolucion = devuelve * 20;
 
       // I (PAGÓ)
