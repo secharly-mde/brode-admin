@@ -139,35 +139,29 @@ export async function importarVentasCSV(url: string) {
         precioUnitario = 300;
       }
 
-      const devuelve = Number(row[6]) || 0;
+      // G (IMPORTE)
+      const importePlanilla = Number(String(row[6]).replace(/[^0-9.-]/g, "")) || 0;
+
+      // H (FRASCOS DEVUELTOS)
+      const devuelve = Number(String(row[7]).replace(/[^0-9.-]/g, "")) || 0;
       const creditoDevolucion = devuelve * 20;
 
-      const val7 = String(row[7] || "").trim();
-      const val8 = String(row[8] || "").trim();
-      const val9 = String(row[9] || "").trim();
-      const val10 = String(row[10] || "").trim();
+      // I (PAGÓ)
+      const pagoRaw = String(row[8] || "").trim().toUpperCase();
 
-      let envioRaw = "";
-      let cel = val8;
+      // J (ENVIOS)
+      const envioRaw = String(row[9] || "").trim();
 
-      if (cel === "180" || cel === "220" || cel.toUpperCase().includes("ENV")) {
-        envioRaw = cel;
-        cel = val9;
-      } else if (val9 === "180" || val9 === "220" || val9.toUpperCase().includes("ENV")) {
-        envioRaw = val9;
-      } else if (!cel && (val9.startsWith("09") || val9.startsWith("+598"))) {
-        cel = val9;
-      }
+      // K (CEL)
+      let cel = String(row[10] || "").trim();
 
       const envioNumerico = Number(envioRaw.replace(/[^0-9.-]/g, "")) || 0;
       const envio = esLocal ? 0 : envioNumerico;
 
-      // Buscar confirmación de pago en las últimas columnas (por si se corrió la columna en el Excel)
-      const colsToSearch = [val7, val8, val9, val10].map(v => v.toUpperCase());
-      const isCortesia = colsToSearch.some(v => v.includes("CORTES") || v.includes("PROMO"));
-      const isPagadoStr = colsToSearch.some(v => v.includes("PAG") || v === "OK" || v === "LISTO" || v === "SI" || v === "SÍ" || v === "S");
-      
-      const pagoNumerico = Number(val7.replace(/[^0-9.-]/g, ""));
+      // Determinamos el estado de pago
+      const isCortesia = pagoRaw.includes("CORTES") || pagoRaw.includes("PROMO");
+      const isPagadoStr = pagoRaw.includes("PAG") || pagoRaw === "OK" || pagoRaw === "LISTO" || pagoRaw === "SI" || pagoRaw === "SÍ" || pagoRaw === "S";
+      const pagoNumerico = Number(pagoRaw.replace(/[^0-9.-]/g, ""));
       
       let estado: "Pagado" | "Pendiente" | "Cortesía" = "Pendiente";
       if (isCortesia) {
@@ -178,7 +172,7 @@ export async function importarVentasCSV(url: string) {
       
       if (isCortesia) metodo = "Ninguno";
 
-      const importePlanilla = Number(String(row[5]).replace(/[^0-9.-]/g, "")) || 0;
+      // Calculamos el importe final si no vino explícito
       let importe = importePlanilla > 0
         ? importePlanilla
         : (frascos * precioUnitario) + envio - creditoDevolucion;
