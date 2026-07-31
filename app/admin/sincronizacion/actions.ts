@@ -86,10 +86,21 @@ export async function importarVentasCSV(url: string) {
         continue;
       }
 
-      if (!colE || colE.toUpperCase() === "NOMBRE") continue;
+      if (colE.toUpperCase() === "NOMBRE") continue;
 
-      let resCant = Number(row[1]) || 0;
-      let polloCant = Number(row[2]) || 0;
+      let resCant = 0;
+      const rawRes = String(row[1] || "").trim();
+      if (rawRes) {
+        const resMatch = rawRes.match(/(\d+)/);
+        if (resMatch) resCant = parseInt(resMatch[1], 10);
+      }
+
+      let polloCant = 0;
+      const rawPollo = String(row[2] || "").trim();
+      if (rawPollo) {
+        const polloMatch = rawPollo.match(/(\d+)/);
+        if (polloMatch) polloCant = parseInt(polloMatch[1], 10);
+      }
 
       if (resCant === 0 && polloCant === 0 && colB) {
         const slashMatch = colB.match(/(\d+)\s*\/\s*(\d+)/);
