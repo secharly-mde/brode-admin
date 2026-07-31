@@ -57,6 +57,11 @@ export default function Dashboard() {
 
   const maxGasto = Math.max(...Object.values(gastosPorCategoria), 1);
 
+  // Cálculos de Logística
+  const totalEnviosCobrados = pedidos.reduce((a, p) => a + (p.envio || 0), 0);
+  const totalGastosReparto = gastosPorCategoria["Reparto"] || 0;
+  const balanceLogistica = totalEnviosCobrados - totalGastosReparto;
+
   // Mes selector: últimos 12 meses
   const meses: string[] = [];
   const now = new Date();
@@ -248,6 +253,43 @@ export default function Dashboard() {
                 <a href="/admin/gastos" className="bg-red-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-red-700 transition-colors">
                   ➕ Registrar Gasto
                 </a>
+              </div>
+            </div>
+          )}
+
+          {/* Logística y Envíos */}
+          {(totalEnviosCobrados > 0 || totalGastosReparto > 0) && (
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden p-6 mt-6">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center text-xl">🛵</div>
+                <div>
+                  <h2 className="font-semibold text-gray-900 text-lg">Balance de Logística y Envíos</h2>
+                  <p className="text-sm text-gray-500">Recaudación por envíos vs Gastos de cadetería/reparto</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100/50">
+                  <p className="text-sm text-indigo-600 font-medium mb-1">Ingresó por Envíos</p>
+                  <p className="text-2xl font-bold text-gray-900">${totalEnviosCobrados.toLocaleString()}</p>
+                  <p className="text-xs text-gray-500 mt-1">Cobrado a clientes</p>
+                </div>
+                
+                <div className="bg-red-50/50 p-4 rounded-xl border border-red-100/50">
+                  <p className="text-sm text-red-600 font-medium mb-1">Gastado en Reparto</p>
+                  <p className="text-2xl font-bold text-gray-900">${totalGastosReparto.toLocaleString()}</p>
+                  <p className="text-xs text-gray-500 mt-1">Cadetería, gasolina, etc.</p>
+                </div>
+
+                <div className={`p-4 rounded-xl border ${balanceLogistica >= 0 ? "bg-emerald-50/50 border-emerald-100/50" : "bg-amber-50/50 border-amber-100/50"}`}>
+                  <p className={`text-sm font-medium mb-1 ${balanceLogistica >= 0 ? "text-emerald-600" : "text-amber-600"}`}>Balance</p>
+                  <p className={`text-2xl font-bold ${balanceLogistica >= 0 ? "text-emerald-700" : "text-amber-700"}`}>
+                    ${balanceLogistica.toLocaleString()}
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {balanceLogistica >= 0 ? "Ganancia/Cobertura a favor" : "Déficit en logística"}
+                  </p>
+                </div>
               </div>
             </div>
           )}
