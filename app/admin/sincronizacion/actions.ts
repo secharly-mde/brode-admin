@@ -229,7 +229,10 @@ export async function importarVentasCSV(url: string) {
         createdAt: now, updatedAt: now,
       };
 
-      pedidosAInsertar.push({ id: generateId("v", currentFecha, colE), data: pedido });
+      // Agregamos un string aleatorio o un timestamp microscópico para garantizar unicidad,
+      // ya que a veces un mismo local (ej. Madre Tierra) tiene múltiples filas en el mismo día.
+      const uniqueSuffix = Math.random().toString(36).substring(2, 8);
+      pedidosAInsertar.push({ id: generateId("v", currentFecha, colE, uniqueSuffix), data: pedido });
       nuevos++;
       newResTotal += resCant;
       newPolloTotal += polloCant;
