@@ -15,7 +15,7 @@ function getMesLabel(mes: string) {
   return fecha.toLocaleDateString("es-UY", { month: "long", year: "numeric" });
 }
 
-const CATEGORIAS: Gasto["categoria"][] = ["Materia Prima", "Cocina", "Local", "Reparto", "Personal", "Admin", "BPS", "DGI"];
+const CATEGORIAS: Gasto["categoria"][] = ["Materia Prima", "Cocina", "Local", "Reparto", "Personal", "Admin"];
 
 const SUBCATEGORIAS: Record<Gasto["categoria"], string[]> = {
   "Materia Prima": ["Pollo Carnivery", "Carne Carnivery", "Carne Novillo", "Pollo Novillo", "Verduras", "Condimentos", "Otro"],
@@ -23,9 +23,7 @@ const SUBCATEGORIAS: Record<Gasto["categoria"], string[]> = {
   Local: ["Alquiler", "UTE", "OSE", "Antel", "Seguro", "Limpieza", "Otro"],
   Reparto: ["Logística Punta del Este", "Cadetería Montevideo", "Gasolina", "Otro"],
   Personal: ["Mariana", "Diego", "German", "Otro"],
-  Admin: ["Publicidad en redes", "Dominio/Hosting", "Contabilidad", "Otro"],
-  BPS: ["Aporte Mensual", "Multas/Recargos", "Otro"],
-  DGI: ["IVA/Aporte Mensual", "Multas/Recargos", "Otro"],
+  Admin: ["Publicidad en redes", "Dominio/Hosting", "Contabilidad", "BPS", "DGI", "Otro"],
 };
 
 const catColors: Record<string, string> = {
@@ -35,11 +33,9 @@ const catColors: Record<string, string> = {
   Reparto: "bg-purple-100 text-purple-800",
   Personal: "bg-pink-100 text-pink-800",
   Admin: "bg-gray-100 text-gray-700",
-  BPS: "bg-teal-100 text-teal-800",
-  DGI: "bg-cyan-100 text-cyan-800",
 };
 const catIcons: Record<string, string> = {
-  "Materia Prima": "🥩", Cocina: "🍲", Local: "🏠", Reparto: "🚚", Personal: "👥", Admin: "💻", BPS: "🏛️", DGI: "📄",
+  "Materia Prima": "🥩", Cocina: "🍲", Local: "🏠", Reparto: "🚚", Personal: "👥", Admin: "💻",
 };
 
 const GASTOS_FIJOS = ["Alquiler", "UTE", "OSE", "Antel", "Seguro", "Limpieza", "Mariana", "Diego", "German", "Publicidad en redes", "Dominio/Hosting", "Contabilidad"];

@@ -16,7 +16,7 @@ function getMesLabel(mes: string) {
 }
 
 const catIcons: Record<string, string> = {
-  "Materia Prima": "🥩", Cocina: "🍲", Local: "🏠", Reparto: "🚚", Personal: "👥", Admin: "💻", BPS: "🏛️", DGI: "📄",
+  "Materia Prima": "🥩", Cocina: "🍲", Local: "🏠", Reparto: "🚚", Personal: "👥", Admin: "💻",
 };
 
 export default function Dashboard() {
