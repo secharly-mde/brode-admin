@@ -21,7 +21,7 @@ const SUBCATEGORIAS: Record<Gasto["categoria"], string[]> = {
   "Materia Prima": ["Pollo Carnivery", "Carne Carnivery", "Carne Novillo", "Pollo Novillo", "Verduras", "Condimentos", "Otro"],
   Cocina: ["Frascos nuevos", "Tapas", "Serigrafía", "Frascos usados devueltos", "Otro"],
   Local: ["Alquiler", "UTE", "OSE", "Antel", "Seguro", "Limpieza", "Otro"],
-  Reparto: ["Logística Punta del Este", "Cadetería Montevideo", "Gasolina", "Otro"],
+  Reparto: ["Logística Punta del Este", "Cadetería Montevideo", "Gasolina", "Cajas", "Bolsas", "Otro"],
   Personal: ["Mariana", "Diego", "German", "Otro"],
   Admin: ["Publicidad en redes", "Dominio/Hosting", "Contabilidad", "BPS", "DGI", "Otro"],
 };
